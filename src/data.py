@@ -37,7 +37,8 @@ TOURNEY_NAMES = [
     "Eastbourne", "Bastad", "Gstaad", "Umag", "Kitzbuhel", "Winston-Salem",
     "WTA Finals", "WTA 1000", "WTA 500", "WTA 250",
     "Abu Dhabi", "Brisbane", "Adelaide", "Sydney", "Auckland", "Hobart",
-    "Seoul", "Tokyo", "Beijing", "Zhuhai", "WTA Elite Trophy"
+    "Seoul", "Tokyo", "Beijing", "Zhuhai", "WTA Elite Trophy",
+    "ATP Naples Challenger"
 ]
 
 FOOTBALL_TEAMS = {
