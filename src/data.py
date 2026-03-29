@@ -3,7 +3,7 @@ MENS_TOP_100 = [
     "Casper Ruud", "Taylor Fritz", "Grigor Dimitrov", "Alex de Minaur", "Tommy Paul",
     "Andrey Rublev", "Stefanos Tsitsipas", "Holger Rune", "Ben Shelton", "Mariano Navone",
     "Nicolas Mahut", "Adrian Mannarino", "Sebastian Korda", "Arthur Fils", "Francisco Cerundolo",
-    "Joao Fonseca",
+    "Joao Fonseca", "Daniel Altmaier", "Hamad Medjedovic",
     "Ugo Humbert", "Alejandro Tabilo", "Alejandro Davidovich Fokina", "Pedro Martinez", "Cameron Norrie",
     "Marin Cilic", "Roberto Bautista Agut", "Borna Coric", "Sebastian Ofner", "Alexandre Muller",
     "Tallion Griekspoor", "Daniel Evans", "Marton Fucsovics", "Albert Ramos-Vinolas",
