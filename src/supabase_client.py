@@ -204,12 +204,15 @@ def get_players(sport: str = "Tenis"):
     return response.data
 
 def add_player(name: str, sport: str = "Tenis"):
-    supabase.table("players").insert({
-        "name": name,
-        "sport": sport,
-        "created_at": datetime.now().isoformat()
-    }).execute()
-    return True
+    try:
+        supabase.table("players").insert({
+            "name": name,
+            "sport": sport,
+            "created_at": datetime.now().isoformat()
+        }).execute()
+        return True
+    except Exception:
+        return False
 
 def update_player(player_id: int, name: str):
     supabase.table("players").update({"name": name}).eq("id", player_id).execute()
