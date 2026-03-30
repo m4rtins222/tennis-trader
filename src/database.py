@@ -333,3 +333,62 @@ def delete_player(player_id: int):
     cursor.execute("DELETE FROM players WHERE id = ?", (player_id,))
     conn.commit()
     conn.close()
+
+def export_data():
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT * FROM trades")
+    trades = [dict(row) for row in cursor.fetchall()]
+    
+    cursor.execute("SELECT * FROM players")
+    players = [dict(row) for row in cursor.fetchall()]
+    
+    cursor.execute("SELECT * FROM bankroll ORDER BY id DESC LIMIT 1")
+    bankroll = dict(cursor.fetchone()) if cursor.fetchone() else None
+    
+    cursor.execute("SELECT * FROM methods")
+    methods = [row["name"] for row in cursor.fetchall()]
+    
+    conn.close()
+    return {"trades": trades, "players": players, "bankroll": bankroll, "methods": methods}
+
+def import_data(data: dict):
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    if "bankroll" in data and data["bankroll"]:
+        b = data["bankroll"]
+        cursor.execute("DELETE FROM bankroll")
+        cursor.execute("INSERT INTO bankroll (initial_amount, current_amount, updated_at) VALUES (?, ?, ?)",
+                     (b["initial_amount"], b["current_amount"], b.get("updated_at", datetime.now().isoformat())))
+    
+    if "methods" in data:
+        for m in data["methods"]:
+            try:
+                cursor.execute("INSERT INTO methods (name) VALUES (?)", (m,))
+            except:
+                pass
+    
+    if "players" in data:
+        for p in data["players"]:
+            try:
+                cursor.execute("INSERT INTO players (name, sport, created_at) VALUES (?, ?, ?)",
+                             (p["name"], p.get("sport", "Tenis"), p.get("created_at", datetime.now().isoformat())))
+            except:
+                pass
+    
+    if "trades" in data:
+        for t in data["trades"]:
+            try:
+                cursor.execute("""
+                    INSERT INTO trades (date, sport, tournament, player, opponent, market, trade_type, odds, stake, exit_odds, exit_stake, pnl, method, notes, status, created_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """, (t["date"], t.get("sport", "Tenis"), t.get("tournament"), t.get("player"), t.get("opponent"),
+                      t["market"], t["trade_type"], t["odds"], t.get("stake"), t.get("exit_odds"), t.get("exit_stake"),
+                      t.get("pnl"), t.get("method"), t.get("notes"), t.get("status", "open"), t.get("created_at", datetime.now().isoformat())))
+            except Exception as e:
+                print(f"Error importing trade: {e}")
+    
+    conn.commit()
+    conn.close()

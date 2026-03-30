@@ -6,7 +6,8 @@ from src.database import (
     init_db, get_bankroll, update_bankroll, update_initial_bankroll,
     add_trade, close_trade, get_trades, get_trade_by_id, update_trade, update_trade_pnl, delete_trade,
     get_methods, add_method, get_stats,
-    get_players, add_player, update_player, delete_player
+    get_players, add_player, update_player, delete_player,
+    export_data, import_data
 )
 from src.data import (
     get_teams_by_sport, get_tourneys_by_sport, get_markets_by_sport, ALL_SPORTS,
@@ -837,6 +838,34 @@ def render_edit_modal():
 
 def render_settings():
     st.markdown("### ⚙️ Configurações")
+    
+    with st.expander("💾 Backup - Importar/Exportar Dados"):
+        col_exp_imp1, col_exp_imp2 = st.columns(2)
+        
+        with col_exp_imp1:
+            if st.button("📤 Exportar Dados", use_container_width=True):
+                import json
+                data = export_data()
+                st.download_button(
+                    label="📥 Baixar Backup",
+                    data=json.dumps(data, indent=2),
+                    file_name="tennis_trader_backup.json",
+                    mime="application/json",
+                    key="download_backup"
+                )
+        
+        with col_exp_imp2:
+            uploaded_file = st.file_uploader("📥 Importar Backup", type=["json"])
+            if uploaded_file:
+                if st.button("✅ Restaurar Dados", use_container_width=True):
+                    import json
+                    try:
+                        data = json.load(uploaded_file)
+                        import_data(data)
+                        st.success("Dados restaurados com sucesso!")
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"Erro ao importar: {e}")
     
     with st.expander("👥 Gerenciar Jogadores"):
         sport_filter = st.selectbox("Filtrar por esporte", ALL_SPORTS, key="settings_sport_filter")

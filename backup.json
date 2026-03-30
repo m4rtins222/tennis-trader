@@ -1,0 +1,31 @@
+{
+  "trades": [
+    {
+      "id": 23,
+      "date": "2026-03-28",
+      "tournament": "NBA Regular Season",
+      "player": "Memphis Grizzlies",
+      "opponent": "Chicago Bulls",
+      "market": "Match Odds",
+      "trade_type": "back",
+      "odds": 3.57,
+      "stake": 100.0,
+      "exit_odds": 3.57,
+      "exit_stake": 100.0,
+      "pnl": 158.19,
+      "method": null,
+      "notes": "",
+      "status": "closed",
+      "created_at": "2026-03-28T23:04:56.437519",
+      "sport": "Basquete"
+    }
+  ],
+  "players": [],
+  "bankroll": {
+    "id": 1,
+    "initial_amount": 10000.0,
+    "current_amount": 10658.189999999999,
+    "updated_at": "2026-03-29T11:17:59.308447"
+  },
+  "methods": []
+}
