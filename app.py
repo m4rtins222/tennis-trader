@@ -868,8 +868,8 @@ def render_settings():
                 with col_p2:
                     st.caption(player['sport'])
                 with col_p3:
-                    if st.button("🗑️", key=f"del_player_{player['id']}"):
-                        delete_player(player['id"])
+                    if st.button("X", key=f"del_player_{player['id']}"):
+                        delete_player(player['id'])
                         st.rerun()
         else:
             st.info("Nenhum jogador cadastrado")
