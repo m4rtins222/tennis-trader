@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 from datetime import datetime
-from src.database import (
+from src.supabase_client import (
     init_db, get_bankroll, update_bankroll, update_initial_bankroll,
     add_trade, close_trade, get_trades, get_trade_by_id, update_trade, update_trade_pnl, delete_trade,
     get_methods, add_method, get_stats,
