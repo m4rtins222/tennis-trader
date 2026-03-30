@@ -5,7 +5,8 @@ from datetime import datetime
 from src.database import (
     init_db, get_bankroll, update_bankroll, update_initial_bankroll,
     add_trade, close_trade, get_trades, get_trade_by_id, update_trade, update_trade_pnl, delete_trade,
-    get_methods, add_method, get_stats
+    get_methods, add_method, get_stats,
+    get_players, add_player, update_player, delete_player
 )
 from src.data import (
     get_teams_by_sport, get_tourneys_by_sport, get_markets_by_sport, ALL_SPORTS,
@@ -384,20 +385,24 @@ def render_new_trade():
         st.session_state.selected_sport = sport
     
     teams = get_teams_by_sport(sport)
+    custom_players = get_players(sport)
+    custom_player_names = [p["name"] for p in custom_players]
+    all_players = sorted(set(teams + custom_player_names))
+    
     tourneys = get_tourneys_by_sport(sport)
     markets = get_markets_by_sport(sport)
     
     col1, col2 = st.columns(2)
     with col1:
         if sport == "Tenis":
-            player = st.selectbox("🎾 Jogador", options=[""] + teams, key="trade_player")
-            opponent = st.selectbox("👤 Adversário", options=[""] + teams, key="trade_opponent")
+            player = st.selectbox("🎾 Jogador", options=[""] + all_players, key="trade_player")
+            opponent = st.selectbox("👤 Adversário", options=[""] + all_players, key="trade_opponent")
         elif sport == "Futebol":
-            player = st.selectbox("🏠 Time Casa", options=[""] + teams, key="trade_player")
-            opponent = st.selectbox("✈️ Time Visitante", options=[""] + teams, key="trade_opponent")
+            player = st.selectbox("🏠 Time Casa", options=[""] + all_players, key="trade_player")
+            opponent = st.selectbox("✈️ Time Visitante", options=[""] + all_players, key="trade_opponent")
         else:
-            player = st.selectbox("🏀 Time Casa", options=[""] + teams, key="trade_player")
-            opponent = st.selectbox("🏀 Time Visitante", options=[""] + teams, key="trade_opponent")
+            player = st.selectbox("🏀 Time Casa", options=[""] + all_players, key="trade_player")
+            opponent = st.selectbox("🏀 Time Visitante", options=[""] + all_players, key="trade_opponent")
         tournament = st.selectbox("🏆 Competição", options=[""] + tourneys, key="trade_tournament")
     
     with col2:
@@ -414,6 +419,11 @@ def render_new_trade():
     
     if st.button("🚀 Registrar Entrada", type="primary", use_container_width=True, key="submit_trade"):
         if stake <= (bankroll['current_amount'] if bankroll else 0):
+            if player and player not in teams:
+                add_player(player, sport)
+            if opponent and opponent not in teams:
+                add_player(opponent, sport)
+            
             trade_data = {
                 "date": date.isoformat(),
                 "tournament": tournament,
@@ -825,6 +835,45 @@ def render_edit_modal():
         st.success("Trade excluído!")
         st.rerun()
 
+def render_settings():
+    st.markdown("### ⚙️ Configurações")
+    
+    with st.expander("👥 Gerenciar Jogadores"):
+        sport_filter = st.selectbox("Filtrar por esporte", ALL_SPORTS, key="settings_sport_filter")
+        
+        players = get_players(sport_filter)
+        
+        st.markdown("#### ➕ Adicionar Jogador")
+        col_add1, col_add2 = st.columns([3, 1])
+        with col_add1:
+            new_player_name = st.text_input("Nome do jogador", key="new_player_name")
+        with col_add2:
+            st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
+            if st.button("➕ Adicionar", key="add_player_btn", use_container_width=True):
+                if new_player_name:
+                    if add_player(new_player_name, sport_filter):
+                        st.success(f"Jogador '{new_player_name}' adicionado!")
+                        st.rerun()
+                    else:
+                        st.error("Jogador já existe!")
+        
+        st.markdown("---")
+        st.markdown("#### 📋 Jogadores Cadastrados")
+        
+        if players:
+            for player in players:
+                col_p1, col_p2, col_p3 = st.columns([4, 2, 1])
+                with col_p1:
+                    st.write(f"**{player['name']}**")
+                with col_p2:
+                    st.caption(player['sport'])
+                with col_p3:
+                    if st.button("🗑️", key=f"del_player_{player['id']}"):
+                        delete_player(player['id"])
+                        st.rerun()
+        else:
+            st.info("Nenhum jogador cadastrado")
+
 def main():
     render_sidebar()
     
@@ -845,6 +894,9 @@ def main():
         render_open_trades()
     with tabs[3]:
         render_history()
+    
+    with st.expander("⚙️ Configurações"):
+        render_settings()
 
 if __name__ == "__main__":
     main()

@@ -58,6 +58,15 @@ def init_db():
         )
     """)
     
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS players (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT UNIQUE NOT NULL,
+            sport TEXT DEFAULT 'Tenis',
+            created_at TEXT NOT NULL
+        )
+    """)
+    
     cursor.execute("SELECT COUNT(*) FROM bankroll")
     if cursor.fetchone()[0] == 0:
         cursor.execute(
@@ -287,5 +296,40 @@ def delete_trade(trade_id: int):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("DELETE FROM trades WHERE id = ?", (trade_id,))
+    conn.commit()
+    conn.close()
+
+def get_players(sport: str = "Tenis"):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM players WHERE sport = ? ORDER BY name", (sport,))
+    rows = cursor.fetchall()
+    conn.close()
+    return [dict(row) for row in rows]
+
+def add_player(name: str, sport: str = "Tenis"):
+    conn = get_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("INSERT INTO players (name, sport, created_at) VALUES (?, ?, ?)", 
+                      (name, sport, datetime.now().isoformat()))
+        conn.commit()
+        conn.close()
+        return True
+    except sqlite3.IntegrityError:
+        conn.close()
+        return False
+
+def update_player(player_id: int, name: str):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE players SET name = ? WHERE id = ?", (name, player_id))
+    conn.commit()
+    conn.close()
+
+def delete_player(player_id: int):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM players WHERE id = ?", (player_id,))
     conn.commit()
     conn.close()
