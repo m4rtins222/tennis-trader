@@ -322,8 +322,8 @@ def render_sidebar():
                 st.markdown(f"<div style='text-align: center; margin-top: 0.5rem; color: rgba(255,255,255,0.5); font-size: 0.85rem;'>{len(open_trades)} aposta(s) aberta(s)</div>", unsafe_allow_html=True)
             
             with st.expander("⚙️ Configurar Banca"):
-                initial = st.number_input("Banca Inicial", value=bankroll['initial_amount'], step=10.0, key="initial_bank")
-                current = st.number_input("Banca Atual", value=bankroll['current_amount'], step=10.0, key="current_bank")
+                initial = st.number_input("Banca Inicial", value=float(bankroll['initial_amount']), step=10.0, key="initial_bank")
+                current = st.number_input("Banca Atual", value=float(bankroll['current_amount']), step=10.0, key="current_bank")
                 col_btn1, col_btn2 = st.columns(2)
                 if col_btn1.button("💾 Salvar", use_container_width=True):
                     update_initial_bankroll(initial, current)
